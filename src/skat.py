@@ -1,3 +1,4 @@
+# !/usr/bin/env python3
 '''
 Created on Sep 6, 2013
 
@@ -47,6 +48,7 @@ class Table:
         scoring = {}
         for p in self.players:
             scoring[p.name] = scoring.get(p.name, p.hand.hand_rank())
+            print("{} has a score of {}".format(p.name, p.hand.hand_rank()))
         lowest_value = min(scoring.items(), key=itemgetter(1))[1]
         skat = 31
         losers = []
@@ -167,6 +169,11 @@ class Player:
     def ai(self, strategy):
         self.ai = strategy
 
+    def decide(self):
+        hand_score = self.hand.hand_rank()
+        if self.ai == "seff":
+            pass
+
     def discard(self, hand):
         pass
 
@@ -198,11 +205,13 @@ class Hand:
     def same_cards(self):
         kinds = set()
         value = set()
+        suits = set()
         for card in self.cards:
             rank, suit, kind = card.value()
             value.add(rank)
             kinds.add(kind)
-        if len(value) == 1 and len(kinds) == 3:
+            suits.add(suit)
+        if len(value) == 1 and len(kinds) == 1 and len(suits) == 3:
             return True
         return False
 
@@ -239,6 +248,17 @@ class Deck:
 
     def __str__(self):
         return', '.join(map(str, self.cards))
+
+    def __iter__(self):
+        return iter(self.cards)
+
+    def __len__(self):
+        return len(self.cards)
+
+    def next(self):
+        if self.x > 0:
+            self.x -= 1
+            return self.x
 
     def shuffle(self):
         random.shuffle(self.cards)
